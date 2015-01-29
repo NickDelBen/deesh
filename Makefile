@@ -8,7 +8,7 @@ BIN_DIR=bin
 #Directory for plugin binaries
 BIN_PLUGIN_DIR=bin/plugins
 
-
+#Compile the main application binaries
 binaries:
 	#Create the main binary directory if it does not exist
 	mkdir -p $(BIN_DIR)
