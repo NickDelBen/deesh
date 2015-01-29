@@ -1,4 +1,4 @@
-//Contains functions and structures that allow for keeping the history of delshell.
+//Contains functions and structures that allow for keeping the history of deesh.
 
 #include "history.h"
 
@@ -41,10 +41,6 @@ int free_history(command_history_t * history_in) {
 }
 
 //Adds an item to the history tracker
-//Parameters
-//  command_in the command to be added to history
-//Return
-//  0 successful
 int add_history(command_history_t * history_in, char * command_in) {
   syslog(LOG_DEBUG, "Adding command to history: %s", command_in);
 
@@ -60,13 +56,6 @@ int add_history(command_history_t * history_in, char * command_in) {
 }
 
 //Prints the last input number of history items
-//If there are less commands than the input number
-//the function will print all history
-//Parameters
-//  history_in the history tracker to print from
-//  items_in   the amount of history items to print
-//Return
-//  0 successful
 int print_history(command_history_t * history_in, int items_in) {
   syslog(LOG_DEBUG, "Printing last %d history items", items_in);
 

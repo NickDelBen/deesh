@@ -1,6 +1,6 @@
 /***********************************************************
  * Contains functions and structures that allow for 
- * keeping the history of delshell.
+ * keeping the history of deesh.
  *
  * Created By: Nick DelBen
  * Created On: January 14, 2015
