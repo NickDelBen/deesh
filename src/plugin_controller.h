@@ -4,8 +4,8 @@
  * Created By: Nick DelBen
  * Created On: January 29, 2015
  *
- * Last Modified: January 29, 2015
- *   - Created Initially
+ * Last Modified: February 1, 2015
+ *   - Added allocations list to get rid of unreachable strings
  **********************************************************/
 
 #ifndef _PLUGIN_CONTROLLER_H
@@ -18,8 +18,6 @@
 
 #include "plugin.h"
 #include "linked_list/linked_list.h"
-
-#define MAX_PLUGIN_SIZE 128
 
 //Deals with the plugins
 typedef struct {

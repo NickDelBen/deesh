@@ -1,4 +1,4 @@
-#include <stdio.h>
+//deesh shell application
 
 #include "plugin_controller.h"
 
