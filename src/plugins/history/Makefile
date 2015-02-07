@@ -21,15 +21,15 @@ prep:
 	mkdir -p $(PLUG_DIR)
 
 #Make the history printer binaries
-printer: history_common.h printer/history_printer.h printer/stream_printer.h printer_driver.c printer/history_printer.c printer/stream_printer.c	
+printer: src/history_common.h src/printer/history_printer.h src/printer/stream_printer.h src/printer_driver.c src/printer/history_printer.c src/printer/stream_printer.c	
 	#Copy the plugin configuration to the output directory
-	cp history_printer.dshp $(OUT_DIR)/
+	cp cfg/history_printer.dshp $(OUT_DIR)/
 	#Compile the binaries for the history printer
-	$(cc) -o $(PLUG_DIR)/print_history printer_driver.c printer/history_printer.c printer/stream_printer.c
+	$(cc) -o $(PLUG_DIR)/print_history src/printer_driver.c src/printer/history_printer.c src/printer/stream_printer.c
 
 #Make the history saver binaries
-saver: history_common.h saver/history_saver.h saver_driver.c saver/history_saver.c
+saver: src/history_common.h src/saver/history_saver.h src/saver_driver.c src/saver/history_saver.c
 	#Copy the plugin configuration to the output directory
-	cp history_saver.dshp $(OUT_DIR)/
+	cp cfg/history_saver.dshp $(OUT_DIR)/
 	#Compile the binaries for the history saver
-	$(cc) -o $(PLUG_DIR)/save_history saver_driver.c saver/history_saver.c
+	$(cc) -o $(PLUG_DIR)/save_history src/saver_driver.c src/saver/history_saver.c
