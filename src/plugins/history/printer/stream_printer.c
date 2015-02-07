@@ -21,7 +21,7 @@ int print_last_lines(FILE * stream_in, int lines_in, int max_length) {
   //Find the specified lines from the specified file
   find_last_lines(lines_in, (char *) &stream_buffer, characters_read - 1, &result_beginning);
   //Print the found lines
-  printf("Last %d lines:\n%s\n", lines_in, result_beginning);
+  printf("%s\n", lines_in, result_beginning);
 
   syslog(LOG_DEBUG, "Print File: Successfully printed lines from stream");
   return 0;

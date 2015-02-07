@@ -1,4 +1,4 @@
-//Driver for the printer modiule of the deesh history plugin
+//Driver for the printer modiule of the deesh history plugin.
 
 #include <syslog.h>
 
@@ -28,7 +28,7 @@ int main(int argc, char **argv) {
       }
       syslog(LOG_DEBUG, "Invalid amount of items %s specified for printing");
     default:
-      syslog(LOG_ERR, "Invalid program call. Correct syntax is <command> <number_of_items>");
+      syslog(LOG_ERR, "Invalid program call. Correct syntax is <executable> <number_of_items>");
       return 1;
   }
 

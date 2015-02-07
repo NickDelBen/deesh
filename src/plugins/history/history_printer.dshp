@@ -1,3 +1,3 @@
-parsed=0
-persist=1
-path=/history/history
+parsed=1
+command=history
+path=/history/print_history
