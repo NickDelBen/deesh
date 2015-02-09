@@ -18,8 +18,13 @@ int store_history(char * filepath_in, char * command_in) {
   //Copy the command to the created buffer
   memcpy(history_buffer, command_in, command_length);
   //Add newline and terminate the new command
-  *(history_buffer + command_length) = NEW_LINE;
-  *(history_buffer + command_length + 1) = STRING_TERMINATOR;
+  if (*(history_buffer + command_length - 1) != NEW_LINE) {
+    syslog(LOG_DEBUG, "Appending newline to end of history item");
+    *(history_buffer + command_length) = NEW_LINE;
+    *(history_buffer + command_length + 1) = STRING_TERMINATOR;
+  } else {
+    *(history_buffer + command_length) = STRING_TERMINATOR;
+  }  
   syslog(LOG_DEBUG, "New Command: '%s'", history_buffer);
 
   //Open the history file to write to

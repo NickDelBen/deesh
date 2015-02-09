@@ -6,7 +6,7 @@
 #include "printer/history_printer.h"
 #include "printer/stream_printer.h"
 
-#define SYSLOG_LOG_LEVEL LOG_DEBUG
+#define SYSLOG_LOG_LEVEL LOG_WARNING
 
 int main(int argc, char **argv) {
   int requested_items;

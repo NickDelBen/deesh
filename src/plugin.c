@@ -4,7 +4,7 @@
 
 //Creates a new plugin from the input plugin file
 int create_plugin(char * filepath_in, plugin_t ** location_in) {
-  syslog(LOG_DEBUG, "Creating new plugin");
+  syslog(LOG_DEBUG, "Create Plugin: Creating new plugin");
 
   FILE * file_pointer;
   plugin_t * new_plugin;
@@ -38,7 +38,7 @@ int create_plugin(char * filepath_in, plugin_t ** location_in) {
 
   //Read the information from the file
   while ((read = getline(&line, &length, file_pointer)) != -1) {
-    syslog(LOG_DEBUG, "Found line '%s' in plugin file", line);
+    syslog(LOG_DEBUG, "Create Plugin: Found line '%s' in plugin file", line);
     //Extract the information from the line
     setting_iterator = 0;
     while (setting_iterator < read) {
@@ -49,7 +49,7 @@ int create_plugin(char * filepath_in, plugin_t ** location_in) {
       }
       ++setting_iterator;
     }
-    syslog(LOG_DEBUG, "Plugin line parsed ended in character: '%c'", current_char);
+    syslog(LOG_DEBUG, "Create Plugin: Plugin line parsed ended in character: '%c'", current_char);
     //If we did not read any characters, the setting is invalid
     if (setting_iterator == 0) {
       result_status = 2;
@@ -65,17 +65,17 @@ int create_plugin(char * filepath_in, plugin_t ** location_in) {
       result_status = 2;
       break;
     }
-    syslog(LOG_DEBUG, "Last character of line: '%c'", *(line + read - 1));
+    syslog(LOG_DEBUG, "Create Plugin: Last character of line: '%c'", *(line + read - 1));
     //Terminate the variable name
     *(line + setting_iterator) = STRING_TERMINATOR;
     //Terminate the variable value
     if (*(line + read - 1) == NEW_LINE) {
       *(line + read - 1) = STRING_TERMINATOR;
     }    
-    syslog(LOG_DEBUG, "Parsing plugin setting setting: '%s' value: '%s' ", line, line + setting_iterator + 1);
+    syslog(LOG_DEBUG, "Create Plugin: Parsing plugin setting setting: '%s' value: '%s' ", line, line + setting_iterator + 1);
     //Attempt to set a plugin setting from the read line
     if ((function_result = set_value(new_plugin, line, line + setting_iterator + 1)) != 0) {
-      syslog(LOG_ERR, "Incorrectly formatted plugin file. Result: '%d'", function_result);
+      syslog(LOG_ERR, "Create Plugin: Incorrectly formatted plugin file. Result: '%d'", function_result);
       //If the setting was invalid the file is not properly formatted
       result_status = 2;
       break;
@@ -100,10 +100,10 @@ int create_plugin(char * filepath_in, plugin_t ** location_in) {
 
 //Sets a member for the input command to the specified value
 int set_value(plugin_t * plugin_in, char * variable_in, char * value_in) {
-  syslog(LOG_DEBUG, "setting value for plugin");
+  syslog(LOG_DEBUG, "Set Value: Setting value for plugin variable");
 
   if (strcmp(variable_in, PARSED_VARIABLE) == 0) {
-    syslog(LOG_DEBUG, "Found parse variable");
+    syslog(LOG_DEBUG, "Set Value: Found parse variable");
     //Make sure the field isnt already set
     if (plugin_in->parsed != DEFAULT_PARSED) {
       return 3;
@@ -119,7 +119,7 @@ int set_value(plugin_t * plugin_in, char * variable_in, char * value_in) {
         return 2;
     }
   } else if (strcmp(variable_in, COMMAND_VARIABLE) == 0) {
-    syslog(LOG_DEBUG, "Found command variable");
+    syslog(LOG_DEBUG, "Set Value: Found command variable");
     //Plugin only can have associated command if it requires parsing
     if (plugin_in->parsed != 1) {
       return 2;
@@ -133,13 +133,10 @@ int set_value(plugin_t * plugin_in, char * variable_in, char * value_in) {
     strcpy(plugin_in->command, value_in);
     return 0;
   } else if (strcmp(variable_in, PERSIST_VARIABLE) == 0) {
-    syslog(LOG_DEBUG, "Found persistence variable");
-    //Persistance can only work if the command is unparsed
-    if (plugin_in->parsed != 0) {
-      return 2;
-    }
+    syslog(LOG_DEBUG, "Set Value: Found persistence variable");
     //Make sure the persistance field is not already set
     if (plugin_in->persist != DEFAULT_PERSIST) {
+      syslog(LOG_DEBUG, "Set Value: Persistance is already set");
       return 3;
     }
     //Handle the result of the plugin value
@@ -148,13 +145,18 @@ int set_value(plugin_t * plugin_in, char * variable_in, char * value_in) {
         plugin_in->parsed = 0;
         return 0;
       case '1':
+        //Persistance can only work if the command is unparsed
+        if (plugin_in->parsed != 0) {
+          syslog(LOG_DEBUG, "Set Value: The plugin must not be parsed in order to have it persistant");
+          return 2;
+        }
         plugin_in->parsed = 1;
         return 0;
       default:
         return 2;
     }
   } else if (strcmp(variable_in, PATH_VARIABLE) == 0) {
-    syslog(LOG_DEBUG, "Found path variable");
+    syslog(LOG_DEBUG, "Set Value: Found path variable");
     //Ensure the field is not set already
     if (plugin_in->plugin_path != NULL) {
       return 3;

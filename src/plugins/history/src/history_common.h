@@ -7,6 +7,6 @@
 #define MAX_COMMAND_LENGTH 512
 
 //The filepath to the history file
-#define HISTORY_FILEPATH "./file.txt\0"
+#define HISTORY_FILEPATH "./history.txt\0"
 
 #endif

@@ -38,7 +38,7 @@
 
 //A plugin that needs to persist data between runs
 typedef struct {
-  int parsed;         //Whether the plugin runs before or after plugin
+  int parsed;         //Whether the plugin runs before or after the command is parsed
   int persist;        //Whether or not a plugin has to be persistance between runs
   int fd_out;         //The file descriptor to push the commands to (only for non persistent commands)
   char * command;     //The command string to match against for this plugin
@@ -48,8 +48,8 @@ typedef struct {
 //Creates a new plugin from the input plugin file
 //DO NOT FORGET TO free_plugin() when you are done
 //Parameters
-//  filepath_in         path to the information file for the plugin
-//  location_in         location to store the newly created command
+//  filepath_in path to the information file for the plugin
+//  location_in location to store the newly created command
 //Return
 //  0 success
 //  1 error opening plugin file

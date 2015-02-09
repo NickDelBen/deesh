@@ -17,11 +17,9 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#include "command.h"
-#include "parsed_command.h"
-
-//Global flag to keep trak of whether process is child or not
-int executor_child_flag;
+#include "commands/command.h"
+#include "descriptors.h"
+#include "commands/parsed_command.h"
 
 //Runs the specified command in a new process
 //Parameters
@@ -29,7 +27,7 @@ int executor_child_flag;
 //Return
 //  0 - success
 //  1 - error running command
-int run_command(char * command_in);
+int run_command(parsed_command_t * command_in);
 
 //Executes a command pipeline recursivly
 //Can be a single command with no pipes
@@ -40,7 +38,8 @@ int run_command(char * command_in);
 //Return
 //  0 - success
 //  1 - final command failed
-void execute_pipeline(parsed_command_t * command_in, int command_num, int descriptor_in);
+//  2 - child process returned failure
+int execute_pipeline(parsed_command_t * command_in, int command_num, int descriptor_in);
 
 //Terminates execution if the process is a child
 void terminate_execution();

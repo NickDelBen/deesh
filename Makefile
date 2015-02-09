@@ -25,7 +25,9 @@ prep:
 	mkdir -p $(BIN_PLUGIN_DIR)
 
 #Compile the main application binaries
-binaries:
+binaries: src/deesh.h src/descriptors.h src/executor.h src/plugin.h src/plugin_controller.h src/commands/command.h src/commands/parsed_command.h src/linked_list/linked_list.h src/linked_list/list_node.h src/driver.c src/deesh.c src/descriptors.c src/executor.c src/plugin.c src/plugin_controller.c src/commands/command.c src/commands/parsed_command.c src/linked_list/linked_list.c src/linked_list/list_node.c
+	#Compile the shell binaries
+	$(cc) -o $(BIN_DIR)/deesh src/driver.c src/deesh.c src/descriptors.c src/executor.c src/plugin.c src/plugin_controller.c src/commands/command.c src/commands/parsed_command.c src/linked_list/linked_list.c src/linked_list/list_node.c
 
 #Compile the history plugin binaries
 plugin-history:

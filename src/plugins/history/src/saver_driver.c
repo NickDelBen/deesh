@@ -5,11 +5,11 @@
 #include "history_common.h"
 #include "saver/history_saver.h"
 
-#define SYSLOG_LOG_LEVEL LOG_DEBUG
+#define SYSLOG_LOG_LEVEL LOG_WARNING
 
 int main(int argc, char **argv) {
   //Initilize the logger
-  openlog("deesh-history-printer", LOG_PERROR | LOG_PID | LOG_NDELAY, LOG_USER);
+  openlog("deesh-history-saver", LOG_PERROR | LOG_PID | LOG_NDELAY, LOG_USER);
   setlogmask(LOG_UPTO(SYSLOG_LOG_LEVEL));
   
   //Check the program call

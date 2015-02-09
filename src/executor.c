@@ -4,22 +4,24 @@
 
 #define DEFAULT_COMMAND_NUM 1
 
-//By default this process is not a child
-executor_child_flag = 0;
-
 //Runs the specified command in a new process
 int run_command(parsed_command_t * commands_in) {
-  syslog(LOG_DEBUG, "Receiving command with '%d' pipes", commands_in->pipes);
+  syslog(LOG_DEBUG, "Run Command: Receiving command with '%d' pipes", commands_in->pipes);
+
+  pid_t pid;
   
   //Attempt to fork for the command execution
   switch(pid = fork()) {
     case -1:
       //Parent process
-      syslog(LOG_DEBUG, "The fork failed.");
+      syslog(LOG_DEBUG, "Run Command: The fork failed.");
       return 1;
     case 0:
       //Child process
-      exec_pipeline(commands_in, DEFAULT_COMMAND_NUM, STDIN_FILENO);
+      if (execute_pipeline(commands_in, DEFAULT_COMMAND_NUM, STDIN_FILENO) != 0) {
+        syslog(LOG_DEBUG, "Child process returned failure");
+        return 2;
+      }
       terminate_execution();
       break;
     default:
@@ -31,22 +33,26 @@ int run_command(parsed_command_t * commands_in) {
 }
 
 //Executes a command pipeline recursivly
-void execute_pipeline(parsed_command_t * command_in, int command_num, int descriptor_in) {
-  syslog("Executing command pipeline. Command %d/%d", command_num, command_in->num_commands);
+int execute_pipeline(parsed_command_t * command_in, int command_num, int descriptor_in) {
+  syslog(LOG_DEBUG, "Executing command pipeline. Command %d/%d", command_num, command_in->num_commands);
 
   command_t * current_command;
 
   //Extract the current command
   current_command = command_in->commands[command_num - 1];
+  syslog(LOG_DEBUG, "Execute Pipeline: Current Command '%s' with %d parameters", current_command->tokens[0], current_command->num_tokens - 1);
   
   //If this is the last command in the pieline, we do not need to fork, just use the current process
   if (command_num == command_in->num_commands) {
-    syslog("Found final command of pipeline");
+    syslog(LOG_DEBUG, "Execute Pipeline: Found final command of pipeline");
     //Redirect input to the specified value
     redirect_descriptor(descriptor_in, STDIN_FILENO);
     //Execute the command
     execvp(current_command->tokens[0], current_command->tokens);
-    terminate_execution();
+    //If there is an error executing plug the pipeline
+    syslog(LOG_ERR, "Command Not Found '%s'", current_command->tokens[0]);
+    //terminate_execution();
+    return 2;
   }
   //This is the pipe that the command will output on
   int fd[2];
@@ -59,12 +65,10 @@ void execute_pipeline(parsed_command_t * command_in, int command_num, int descri
     //Check if we fail to fork
     case -1:
       //If we fail to fork ctop execution
-      syslog(LOG_ERR, "Error forking");
+      syslog(LOG_ERR, "Execute Pipeline: Error forking");
       terminate_execution();
     //Check if the for was successful and this is the child process
     case 0:
-      //Mark that this process is a child process
-      executor_child_flag = 1;
       //Close the read end of the output pipe
       close(fd[0]);
       //Set the input for this process to the input pipe
@@ -72,25 +76,26 @@ void execute_pipeline(parsed_command_t * command_in, int command_num, int descri
       //Set the output for this process to be the output pipe
       redirect_descriptor(fd[1], STDOUT_FILENO);
       //Execute the command at this node in the pipeline
-      execvp(cmds[pos][0], cmds[pos]);
+      execvp(current_command->tokens[0], current_command->tokens);
       //If there is an error executing plug the pipeline
-      syslog(LOG_ERR, "Error executing command");
-      terminate_execution();
+      syslog(LOG_ERR, "Command Not Found '%s'", current_command->tokens[0]);
+      //terminate_execution();
+      return 2;
     //Check if fork was successful and this is the parent
     default:
+      //Wait for the previous child to finish before executing
+      wait(NULL);
       //Close the write end of the output pipe
       close(fd[1]);
       //Close the input file descriptor
-      close(in_fd);
+      close(descriptor_in);
       //Continue executing the pipeline
-      execute_pipeline(cmds, pos + 1, fd[0]);
+      return execute_pipeline(command_in, command_num + 1, fd[0]);
   }
 }
 
 //Terminates execution if this process is not the parent
 void terminate_execution() {
-  //If this is the child exit
-  if (executor_child_flag) {
-    exit(1);
-  }
+  syslog(LOG_DEBUG, "Terminate Execution: Attempting to terminate pipeline execution");
+  exit(1);
 }
